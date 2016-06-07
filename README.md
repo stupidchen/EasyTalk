@@ -1,4 +1,5 @@
 #EasyTalk
+[![Build Status](https://travis-ci.org/stupidchen/EasyTalk.svg?branch=master)]
 ![Progress](http://progressed.io/bar/15?title=progress) 
 A simple and stupid IM.
 
