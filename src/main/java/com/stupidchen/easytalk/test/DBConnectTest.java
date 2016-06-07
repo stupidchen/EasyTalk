@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DBConnectTest implements GeneralTest {
-    private static Logger logger = LoggerFactory.getLogger(SelfCheck.class);
+    private static Logger logger = LoggerFactory.getLogger(DBConnectTest.class);
 
     @Autowired
     JdbcTemplate jdbcTemplate;

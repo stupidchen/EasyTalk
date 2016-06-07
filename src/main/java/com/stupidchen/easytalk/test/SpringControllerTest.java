@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SpringControllerTest implements GeneralTest {
-    private static Logger logger = LoggerFactory.getLogger(SelfCheck.class);
+    private static Logger logger = LoggerFactory.getLogger(SpringControllerTest.class);
 
     public SpringControllerTest() {
         SelfCheck.register(this);
@@ -18,7 +18,7 @@ public class SpringControllerTest implements GeneralTest {
 
     @Override
     public boolean execute() {
-        logger.info("Into hello test");
+        logger.info("Executing Hello test");
         return true;
     }
 

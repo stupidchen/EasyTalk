@@ -15,7 +15,7 @@ import java.io.IOException;
 @ServerEndpoint("/websocketTest")
 @Component
 public class WebSocketTest implements GeneralTest {
-    private static Logger logger = LoggerFactory.getLogger(SelfCheck.class);
+    private static Logger logger = LoggerFactory.getLogger(WebSocketTest.class);
 
     private static String receive = "";
 
@@ -48,7 +48,7 @@ public class WebSocketTest implements GeneralTest {
 
     @Override
     public boolean execute() {
-        logger.info("Into websocket test.. Received: " + receive);
+        logger.info("Executing WebSocket test.. Received: " + receive);
         return true;
     }
 }

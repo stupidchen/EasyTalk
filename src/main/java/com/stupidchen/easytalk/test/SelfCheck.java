@@ -25,7 +25,7 @@ public class SelfCheck {
 
     @RequestMapping("/test")
     public void execute() {
-        logger.info("into SelfCheck.. Test number: " + testList.size());
+        logger.info("Executing SelfCheck.. Test number: " + testList.size());
 
         boolean result = true;
         int testNo = 0;

@@ -14,6 +14,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * Created by Mike on 16/6/7.
  */
 
+@Deprecated
 @ServerEndpoint("/wsTest")
 @Component
 public class WsTest {
