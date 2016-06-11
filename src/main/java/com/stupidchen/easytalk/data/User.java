@@ -4,29 +4,29 @@ package com.stupidchen.easytalk.data;
  * Created by Mike on 16/6/6.
  */
 public class User {
-    private String id;
+    private String userId;
 
     private String username;
 
     private String password;
 
-    public User(String id, String username, String password) {
-        this.id = id;
+    public User(String userId, String username, String password) {
+        this.userId = userId;
         this.username = username;
         this.password = password;
     }
 
     @Override
     public String toString() {
-        return id + ":" + username;
+        return userId + ":" + username;
     }
 
     public String getId() {
-        return id;
+        return userId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setId(String userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {

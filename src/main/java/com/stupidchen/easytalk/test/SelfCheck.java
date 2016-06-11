@@ -3,8 +3,11 @@ package com.stupidchen.easytalk.test;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +27,8 @@ public class SelfCheck {
     }
 
     @RequestMapping("/test")
-    public void execute() {
+    @ResponseBody
+    public String execute() {
         logger.info("Executing SelfCheck.. Test number: " + testList.size());
 
         boolean result = true;
@@ -32,10 +36,18 @@ public class SelfCheck {
         for (GeneralTest test: testList) {
             boolean thisResult = test.execute();
             result = result && thisResult;
-            if (thisResult)
+            if (thisResult) {
                 logger.info("Success");
-            else
+            }
+            else {
                 logger.warn("Failed!");
+                return "SelfCheck failed!";
+            }
         }
+        return "SelfCheck success!";
+    }
+
+    private String redirect() {
+        return "index2.html";
     }
 }
