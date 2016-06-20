@@ -31,11 +31,6 @@ public class Message {
         this.status = status;
     }
 
-    @Override
-    public String toString() {
-        return messageId + ":" + message;
-    }
-
     public String getMessageId() {
         return messageId;
     }
@@ -83,4 +78,10 @@ public class Message {
     public void setStatus(int status) {
         this.status = status;
     }
+
+    @Override
+    public String toString() {
+        return messageId + ":" + message;
+    }
+
 }

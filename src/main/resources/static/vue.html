@@ -7,8 +7,15 @@
 <body>
     <div id="app">
         <p>{{ message }}</p>
-        <input v-model="message">
+       <!-- <input v-model="message"> -->
+        <br/>
+        <p>Websocket test:</p>
+        <p>{{ rmsg }}</p>
     </div>
+    <form onsubmit="return sendTest();">
+        <label for="testText"></label><input type="text" id="testText" />
+        <button type="submit">Send</button>
+    </form>
     <script src="https://cdn.jsdelivr.net/vue/latest/vue.js"></script>
     <script src="js/wsTest.js"></script>
     <script src="js/vueTest.js"></script>

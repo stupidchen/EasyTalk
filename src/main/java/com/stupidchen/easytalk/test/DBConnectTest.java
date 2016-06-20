@@ -25,7 +25,7 @@ public class DBConnectTest implements GeneralTest {
     @Override
     public boolean execute() {
         logger.info("DB connect test(From User): ");
-        jdbcTemplate.query("select * from user", (rs, rowNum) -> new User(rs.getString("userId"), rs.getString("username"), rs.getString("password"))).forEach(user -> logger.info(user.toString()));
+        jdbcTemplate.query("select * from user", (rs, rowNum) -> new User(rs.getString("userId"),  rs.getString("password"))).forEach(user -> logger.info(user.toString()));
         return true;
     }
 }

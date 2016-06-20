@@ -1,5 +1,6 @@
 var token;
 var tokenCookieName = 'etLogin';
+var loginUserId;
 
 function getCookie (name) {
     if (document.cookie.length > 0) {
@@ -26,14 +27,16 @@ function deleteCookie (name) {
 
 function getTokenCookie() {
     token = getCookie(tokenCookieName);
+    if (token != null) {
+        token = token.substr(tokenCookieName.length + 1, token.length);
+    }
 }
 
 function redirectIfLogin() {
-    if (token == null) getTokenCookie();
-    
+    getTokenCookie()
     if (token != null) {
         alert('Please first logout before login again!');
-        window.location.href = 'index2.html';
+        window.location.href = 'index.html';
     }
 }
 
