@@ -1,5 +1,5 @@
 var authWebSocket;
-var authStatus; //0:login 1:register 2:token
+var authStatus = -2; //0:login 1:register 2:token -1:success -2:init
 
 function sendAuth () {
     if (authStatus == 0) sendAccess();
@@ -20,11 +20,11 @@ function checkAuthWebSocket() {
                     token = receiveMsg.substr(4);
                     setCookie(tokenCookieName, token);
                 }
+                authStatus = -1;
                 window.location.href = 'index.html';
             }
             if (receiveMsg.indexOf('L:F') == 0) {
                 alert('Email or password incorrect!');
-                loginUserId = null;
             }
             if (receiveMsg.indexOf('R:S') == 0) {
                 alert('Registration finished. Please login!');
@@ -34,8 +34,9 @@ function checkAuthWebSocket() {
                 alert(receiveMsg.substr(4, receiveMsg.length));
             }
             if (receiveMsg.indexOf('T:P') == 0) {
-                loginUserId = receiveMsg.substr(4);
-                alert(loginUserId + ' login success.');
+                var loginUserId = receiveMsg.substr(4);
+                authStatus = -1;
+                authWebSocket.close();
             }
             if (receiveMsg.indexOf('T:F') == 0) {
                 alert(receiveMsg.substr(4, receiveMsg.length));
@@ -58,7 +59,6 @@ function sendAccess () {
         var username = eval(document.getElementById('username')).value;
         var password = eval(document.getElementById('password')).value;
         var sendMsg = 'L:' + username + '&' + password;
-        loginUserId = username;
         authWebSocket.send(sendMsg);
     }
 }

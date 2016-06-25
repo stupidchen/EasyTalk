@@ -19,3 +19,6 @@ Add basic security measure.
 
 #0.4.0
 Add the chat page, improved the database and controller logic, etc.
+
+#0.5.0
+Fixed the connection logic, and do some adjustment of UI.

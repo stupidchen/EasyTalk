@@ -1,6 +1,5 @@
 var token;
 var tokenCookieName = 'etLogin';
-var loginUserId;
 
 function getCookie (name) {
     if (document.cookie.length > 0) {

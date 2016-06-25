@@ -1,8 +1,10 @@
 package com.stupidchen.easytalk.controller;
 
 import com.stupidchen.easytalk.EasyTalkApplication;
+import com.stupidchen.easytalk.data.Mapper.MessageMapper;
 import com.stupidchen.easytalk.data.Mapper.UserInfoMapper;
 import com.stupidchen.easytalk.data.Mapper.UserMapper;
+import com.stupidchen.easytalk.data.Message;
 import com.stupidchen.easytalk.data.User;
 import com.stupidchen.easytalk.data.UserInfo;
 import org.apache.ibatis.session.SqlSession;
@@ -32,18 +34,32 @@ public class DatabaseController {
         return false;
     }
 
-    //TOFIX Add the information of user
+    public UserInfo getUserInfo(String userId) {
+        if (sqlSession == null) sqlSession = EasyTalkApplication.sqlSessionFactory.openSession();
+        UserInfoMapper userInfoMapper = sqlSession.getMapper(UserInfoMapper.class);
+        UserInfo thisUser = userInfoMapper.selectUserInfo(userId);
+
+        return thisUser;
+    }
+
     public void addUser(String userId, String username, String password) {
         if (sqlSession == null) sqlSession = EasyTalkApplication.sqlSessionFactory.openSession();
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
         userMapper.insertUser(userId, password);
         UserInfoMapper userInfoMapper = sqlSession.getMapper(UserInfoMapper.class);
+        //TOFIX Add the information of user
         userInfoMapper.insertUserInfo(userId, username, "Male");
         sqlSession.commit();
     }
 
-    public void addMessage() {
+    public void insertMessage(MessageMapper mapper, Message message) {
+        mapper.insertMessage(message.getFromUserId(), message.getToUserId(), message.getSendTime(), message.getMessage(), message.getStatus());
+    }
 
+    public void addMessage(Message message) {
+        if (sqlSession == null) sqlSession = EasyTalkApplication.sqlSessionFactory.openSession();
+        MessageMapper messageMapper = sqlSession.getMapper(MessageMapper.class);
+        insertMessage(messageMapper, message);
     }
 
     public void updateUserInfo() {

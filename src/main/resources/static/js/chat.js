@@ -1,22 +1,69 @@
 /**
  * Created by Mike on 16/6/14.
  */
+function getTime(date) {
+    if(date == null) {
+        date = new Date();
+    }
+    var y = date.getFullYear();
+    var M = date.getMonth() + 1;
+    var d = date.getDate();
+    var h = date.getHours();
+    var m = date.getMinutes();
+    var s = date.getSeconds();
+    var html = y + "-";
+    if(M < 10)
+    {
+        html += "0";
+    }
+    html += M + "-";
 
-new Vue({
-    el: 'body',
-    compiled () {
-        this.io = this.initConnection(this.initInfo, this.addMessage);
+    if(d < 10)
+    {
+        html += "0";
+    }
+    html += d + " ";
+    if(h < 10)
+    {
+        html += "0";
+    }
+    html += h + ":";
+    if(m < 10)
+    {
+        html += "0";
+    }
+    html += m + ":";
+    if(s < 10)
+    {
+        html += "0";
+    }
+    html += s;
+    return html;
+}
+
+var chat = {
+    el: '#chat',
+    created () {
+        this.io = this.initConnection(this.initInfo, this.initUserList, this.addUser, this.removeUser, this.addMessage);
     },
+    
     data: {
         io: {},
+
         user: {
             userId: null,
-            name: '',
+            username: '',
             gender: '',
-            displayName: ''
         },
 
         chatSessions: [],
+        /*
+        userId: userId,
+        username: username,
+        online: true,
+        unread: false,
+        messages: []
+         */
 
         activeChatSession: {
             userId: null,
@@ -24,24 +71,36 @@ new Vue({
         },
 
         onlineUsers: [],
-        messageContent: '',
+        message: '',
     },
     methods: {
-        initConnection(initInfo, addMsg) {
+        initConnection(initInfo, initUserList, addUser, removeUser, addMessage) {
+            getTokenCookie();
             var conn = new WebSocket('ws://localhost:8080/chat');
             conn.onopen = function (event) {
-                this.send('IR');
+                this.send('UI:' + token);
                 this.status = 0;
             };
             conn.onmessage = function (event) {
-                alert('build');
                 var receiveMsg = event.data;
-                alert(this.status);
-                if (this.status == 0) {
-                    initInfo(eval(receiveMsg));
+                var msg = receiveMsg.substr(3, receiveMsg.length);
+                var obj = eval('(' + msg + ')');
+                //alert(receiveMsg);
+                if (receiveMsg.indexOf('UI') == 0) {
+                    initInfo(obj);
+                    this.send("OI");
                 }
-                if (this.status == 1) {
-                    addMsg(eval(receiveMsg));
+                if (receiveMsg.indexOf('OI') == 0) {
+                    initUserList(obj); 
+                }
+                if (receiveMsg.indexOf('AU') == 0) {
+                    addUser(obj);
+                }
+                if (receiveMsg.indexOf('MR') == 0) {
+                    addMessage(obj);
+                }
+                if (receiveMsg.indexOf('RU') == 0) {
+                    removeUser(obj);
                 }
             }
             conn.onerror = function (event) {
@@ -51,8 +110,15 @@ new Vue({
             return conn;
         },
 
-        initInfo (data) {
-            this.onlineUsers = data.userList;
+        initInfo (info) {
+            this.user.gender = info.gender;
+            this.user.userId = info.userId;
+            this.user.username = info.username;
+            this.user.genderClass = this.getGenderClass(this.user.gender);
+        },
+        
+        initUserList (userList) {
+            this.onlineUsers = userList;
             for (var user of this.onlineUsers) {
                 user.genderClass = this.getGenderClass(user.gender);
             }
@@ -63,6 +129,7 @@ new Vue({
             if (this.user.userId != user.userId) this.onlineUsers.push(user);
         },
 
+        //TOFIX add the event driver
         removeUser (userId) {
             var userIndex = this.onlineUsers.findIndex(u => u.userId == userId);
             if (userIndex != -1) this.onlineUsers.splice(userIndex, 1);
@@ -71,71 +138,67 @@ new Vue({
             if (activeSession) activeSession.online = false;
         },
 
+        //TOFIX add the event driver
         addMessage (msg) {
-            console.log('Received new chat message: ')
-            console.log(JSON.stringify(msg))
-
             // Check if we have an active chat session with the sender
-            var activeSession = this.chatSessions.find(cs => cs.userId == msg.senderId)
+            var activeSession = this.chatSessions.find(cs => cs.userId == msg.fromUserId)
             if (!activeSession) {
-                this.addChatSession(msg.senderId, msg.senderDisplayName)
-                activeSession = this.chatSessions[this.chatSessions.length - 1]
+                this.addChatSession(msg.fromUserId, msg.fromUserId);
+                activeSession = this.chatSessions[this.chatSessions.length - 1];
                 if (!this.activeChatSession.userId) {
-                    this.activeChatSession = activeSession
+                    this.activeChatSession = activeSession;
                 }
             }
 
-            if (this.activeChatSession.userId != msg.senderId) {
-                activeSession.unread = true
-                activeSession.messages.push(msg)
+            if (this.activeChatSession.userId != msg.fromUserId) {
+                //alert(msg.fromUserId);
+                activeSession.unread = true;
+                activeSession.messages.push(msg);
             } else {
-                this.addMsgToActiveChat(msg)
+                this.addMsgToActiveChat(msg);
             }
         },
 
         // Open chat session with user
         startChat (user) {
-
-            var session = this.chatSessions.find(cs => cs.userId == user.userId)
+            var session = this.chatSessions.find(cs => cs.userId == user.userId);
             if (!session) {
-
-                console.log('Starting new chat session with ' + user.displayName)
-                this.addChatSession(user.userId, user.displayName)
-                session = this.chatSessions[this.chatSessions.length - 1]
+                this.addChatSession(user.userId, user.username);
+                session = this.chatSessions[this.chatSessions.length - 1];
             }
 
-            this.activeChatSession = session
+            this.activeChatSession = session;
         },
 
         /** Send chat message from the textarea to the recipient **/
         sendMessage (e, userId) {
-            e.preventDefault()
+            e.preventDefault();
 
+            var timeStr = getTime(new Date());
             var msg = {
-                content: this.messageContent,
-                recipient: this.activeChatSession.userId,
-                senderId: this.user.userId
-            }
+                toUserId: this.activeChatSession.userId,
+                fromUserId: this.user.userId,
+                message: this.message,
+                sendTime: timeStr
+            };
 
-            this.addMsgToActiveChat(msg)
-            this.messageContent = ''
+            this.addMsgToActiveChat(msg);
             
-            this.io.send(msg);
+            this.io.send('MS:' + JSON.stringify(msg));
+            this.message = '';
         },
 
-        addChatSession (userId, displayName) {
+        addChatSession (userId, username) {
             this.chatSessions.push({
                 userId: userId,
-                displayName: displayName,
+                username: username,
                 online: true,
                 unread: false,
                 messages: []
-            })
+            });
         },
 
         setActiveChatSession (userId) {
-            console.log('Setting active session to ' + userId);
-            console.log(this.chatSessions[userId]);
             this.activeChatSession = this.chatSessions.find(cs => cs.userId == userId);
             this.activeChatSession.userId = userId;
             this.activeChatSession.unread = false;
@@ -177,26 +240,41 @@ new Vue({
                 case 'Other':
                     return 'other gender';
             }
-        }
+        },
+
     },
     
     computed: {
         sessionMenuClass () {
+            var obj = {
+                one: false,
+                two: false,
+                three: false,
+                four: false,
+                five: false,
+                six: false,
+                seven: false
+            }
             switch (this.chatSessions.length) {
                 case 0:
                 case 1:
-                    return 'one'
+                    obj.one = true; return obj;
                 case 2:
-                    return 'two'
+                    obj.two = true; return obj;
                 case 3:
-                    return 'three'
+                    obj.three = true; return obj;
                 case 4:
-                    return 'four'
+                    obj.four = true; return obj;
                 case 5:
-                    return 'five'
+                    obj.five = true; return obj;
                 case 6:
-                    return 'six'
+                    obj.six = true; return obj;
+                case 7:
+                    obj.seven = true; return obj;
             }
+            return obj;
         }
     }
-})
+}
+
+var app = new Vue(chat);

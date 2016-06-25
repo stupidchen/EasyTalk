@@ -1,15 +1,95 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
+    <!-- Standard Meta -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    <!-- Site Properties -->
     <title>EasyTalk</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/vue/latest/vue.js"></script>
+    <script src="semantic/semantic.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="semantic/semantic.min.css">
+    <link rel="stylesheet" type="text/css" href="css/style_chat.css">
 
     <script src="js/head.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/index.js"></script>
 </head>
 <body onload="checkToken()">
-    <h1>Hello! Welcome to EasyTalk!</h1>
-    <button onclick="logout()">Logout</button>
+<div id="chat">
+    <!--Top navigation-->
+    <div class="ui fixed menu">
+        <div class="ui container">
+            <span class="header"><i class="huge comments icon"></i>EasyTalk</span>
+            <div class="right menu">
+                <a href="https://github.com/jimutt/Vue.js-socket.io-chatroom-example" class="item">
+                    <i class="large github square icon"></i>Github</a>
+            </div>
+        </div>
+    </div>
+    <!-- Main Content-->
+    <div class="ui main container">
+
+        <!-- Chat container -->
+        <div class="ui fluid card">
+            <!-- Header-->
+            <div class="content">
+                <div class="header"><span>Chat</span><span class="float-right">Logged on as:<i>{{user.username}}</i></span></div>
+                <div class="float-right">
+                    <a onclick="logout()" class="item">
+                        <i class="large remove user icon"></i></a>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="content"></div>
+            <div class="ui divided grid">
+                <div class="row">
+                    <!-- Sidebar Heading -->
+                    <div class="four wide column">
+                        <h2 id="chat-sidebar-header">Online users</h2>
+                    </div>
+
+                    <!-- Active chat sessions menu -->
+                    <div class="twelve wide column">
+                        <div class="ui item menu" v-bind:class="{{sessionMenuClass}}">
+                            <a v-for="s in chatSessions" v-bind:class="{ 'active': activeChatSession.userId == s.userId }" @click="setActiveChatSession(s.userId)" class="item">{{s.username}}
+                            <div v-if="!s.online" class="offline"></div><i v-if="s.unread" class="comment icon unread-notification"></i><i @click="closeChatSession(s.userId, $event)" class="remove icon close-session"></i></a><a v-if="chatSessions.length &lt; 1" class="item active">No active chat session</a></div>
+                    </div>
+
+                    <!-- User list sidebar -->
+                    <div class="four wide column chat-sidebar">
+                        <div v-if="onlineUsers.length &lt; 1" class="span">No online users</div>
+                        <div id="chatUser" v-for="user in onlineUsers" @click="startChat(user)" class="ui left aligned green segment">{{user.username}}<i class="right floated {{user.genderClass}} icon"></i></div>
+                    </div>
+
+                    <!-- Main chat window -->
+                    <div class="twelve wide column">
+                        <div v-el:chat-msg-window class="row message-window">
+                            <div v-el:chat-msg-window-content class="div message-window-content">
+                                <div v-for="message in activeChatSession.messages" class="chat-message">
+                                    <div v-bind:class="{'contact': message.fromUserId != user.userId, 'you': message.fromUserId == user.userId}" class="ui raised segment"><span>{{message.message}}</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-if="activeChatSession.userId" class="row chat-textarea">
+                            <div class="ui form">
+                                <div class="field">
+                                    <textarea id="message-input" rows="4" placeholder="Write something..." @keydown.enter="sendMessage($event)" v-model="message"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/chat.js"></script>
+</div>
 </body>
 </html>

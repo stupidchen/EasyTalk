@@ -11,7 +11,6 @@ function checkToken() {
 
 function logout() {
     deleteCookie(tokenCookieName);
-    loginUserId = null;
     window.location.href = 'login.html';
 }
 

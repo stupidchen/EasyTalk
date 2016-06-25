@@ -7,7 +7,7 @@ import java.sql.Time;
  * Created by Mike on 16/6/6.
  */
 public class Message {
-    private String messageId;
+    private int messageId;
 
     private String fromUserId;
 
@@ -15,14 +15,28 @@ public class Message {
 
     private String message;
 
-    private Time sendTime;
+    private String sendTime;
 
     private int status;
 
     public Message() {
     }
 
-    public Message(String messageId, String fromUserId, String toUserId, String message, Time sendTime, int status) {
+    public Message(String toUserId, String message, String sendTime) {
+        this.toUserId = toUserId;
+        this.message = message;
+        this.sendTime = sendTime;
+    }
+
+    public Message(String fromUserId, String toUserId, String message, String sendTime, int status) {
+        this.fromUserId = fromUserId;
+        this.toUserId = toUserId;
+        this.message = message;
+        this.sendTime = sendTime;
+        this.status = status;
+    }
+
+    public Message(int messageId, String fromUserId, String toUserId, String message, String sendTime, int status) {
         this.messageId = messageId;
         this.fromUserId = fromUserId;
         this.toUserId = toUserId;
@@ -31,11 +45,11 @@ public class Message {
         this.status = status;
     }
 
-    public String getMessageId() {
+    public int getMessageId() {
         return messageId;
     }
 
-    public void setMessageId(String messageId) {
+    public void setMessageId(int messageId) {
         this.messageId = messageId;
     }
 
@@ -63,11 +77,11 @@ public class Message {
         this.message = message;
     }
 
-    public Time getSendTime() {
+    public String getSendTime() {
         return sendTime;
     }
 
-    public void setSendTime(Time sendTime) {
+    public void setSendTime(String sendTime) {
         this.sendTime = sendTime;
     }
 

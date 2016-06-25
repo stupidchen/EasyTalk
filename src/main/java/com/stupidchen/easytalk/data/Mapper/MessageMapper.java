@@ -19,6 +19,6 @@ public interface MessageMapper {
     @Select("SELECT * FROM Message WHERE fromUserId = #{0} AND toUserId = #{1}")
     ResultMap selectMessage(String fromUserId, String toUserId);
 
-    @Insert("INSERT INTO Message VALUES (#{0}, #{1}, #{2}, #{3}, #{4}, #{5})")
-    void insertMessage(String messageId, String fromUserId, String toUserId, Time sendTime, String message, int status);
+    @Insert("INSERT INTO Message (fromUserId, toUserId, sendTime, message, status) VALUES (#{0}, #{1}, #{2}, #{3}, #{4})")
+    void insertMessage(String fromUserId, String toUserId, String sendTime, String message, int status);
 }
