@@ -1,6 +1,6 @@
 #EasyTalk
 ![Build Status](https://travis-ci.org/stupidchen/EasyTalk.svg?branch=master)
-![Progress](http://progressed.io/bar/25?title=progress) 
+![Progress](http://progressed.io/bar/60?title=progress) 
 </br>
 A simple and stupid IM.
 
@@ -16,3 +16,9 @@ Added the MyBatis framework and its test. Finished a origin mapper.
 #0.2.0
 Finished the login and register page. Adjust the database structrue and program structure.
 Add basic security measure.
+
+#0.4.0
+Add the chat page, improved the database and controller logic, etc.
+
+#0.5.0
+Fixed the connection logic, and do some adjustment of UI.

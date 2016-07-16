@@ -28,8 +28,8 @@ public class MyBatisTest implements GeneralTest {
         try {
             logger.info("Inserting into user!");
             UserMapper userMapper = session.getMapper(UserMapper.class);
-            userMapper.insertUser("348811243", "stupidchen", "123");
-            User test = userMapper.selectUser("348811243");
+            userMapper.insertUser("348811243", "123");
+            User test = userMapper.selectUser("348811243", "123");
             logger.info("Insert user success! User: " + test);
             userMapper.deleteUser("348811243");
             result = true;

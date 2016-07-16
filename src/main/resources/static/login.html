@@ -14,13 +14,11 @@
     <link rel="stylesheet" type="text/css" href="css/demo.css" />
     <link rel="stylesheet" type="text/css" href="css/style.css" />
     <link rel="stylesheet" type="text/css" href="css/animate-custom.css" />
+
+    <script src="js/head.js"></script>
+    <script src="js/auth.js"></script>
 </head>
-<body>
-<script src="js/head.js"></script>
-<script src="js/login.js"></script>
-<script>
-    redirectIfLogin();
-</script>
+<body onload="redirectIfLogin()">
 <div class="container">
     <header>
         <h1>Welcome to <span>EasyTalk!</span></h1>
@@ -36,8 +34,8 @@
                     <form onsubmit="return checkLogin();" autocomplete="on">
                         <h1>Log in</h1>
                         <p>
-                            <label for="username" class="uname" data-icon="u" > Your email or username </label>
-                            <input id="username" name="username" required="required" type="email" placeholder="username or email address"/>
+                            <label for="username" class="uname" data-icon="u" > Your email </label>
+                            <input id="username" name="username" required="required" type="email" placeholder="email address"/>
                         </p>
                         <p>
                             <label for="password" class="youpasswd" data-icon="p"> Your password </label>

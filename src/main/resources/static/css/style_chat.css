@@ -1,0 +1,95 @@
+body {
+    background-color: #FFFFFF;
+    font-family: Helvetica, sans-serif;
+}
+
+.ui.menu .item img.logo {
+    margin-right: 1.5em;
+}
+
+.main.container {
+    margin-top: 7em;
+}
+
+.wireframe {
+    margin-top: 2em;
+}
+
+.ui.footer.segment {
+    margin: 5em 0em 0em;
+    padding: 5em 0em;
+}
+
+.menu .header {
+    font-weight: bold;
+}
+.chat-sidebar {
+    max-height: 542px;
+    overflow-y: scroll;
+    -webkit-box-shadow: initial !important;
+    box-shadow: initial !important;
+}
+
+#chat-sidebar-header {
+    padding-bottom: 10px;
+}
+
+.message-window {
+    height: 450px;
+    overflow-y: scroll;
+    overflow-x: auto;
+}
+
+.message-window-content {
+    overflow: hidden;
+}
+
+.chat-message {
+    width: 100%;
+    margin: 5px 0;
+    float: left;
+}
+
+.chat-message > .ui.raised.segment {
+    max-width: 90%;
+    overflow-wrap: break-word;
+}
+
+.ui.raised.segment.contact, .ui.raised.segment.you {
+    width: auto;
+}
+
+.ui.raised.segment.you {
+    background-color: #CCDDE3;
+    float: right;
+    margin-right: 10px;
+}
+
+.ui.raised.segment.contact {
+    float: left;
+}
+#chatUser:hover {
+    cursor: pointer;
+}
+
+.offline {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #ff0000;
+    margin-left: 5px;
+}
+
+.unread-notification {
+    margin-left: 5px;
+}
+
+.close-session {
+    top: 2px;
+    right: 0;
+    position: absolute;
+}
+
+.float-right {
+    float: right;
+}

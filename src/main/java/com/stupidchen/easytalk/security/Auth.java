@@ -1,13 +1,14 @@
 package com.stupidchen.easytalk.security;
 
 import com.stupidchen.easytalk.EasyTalkApplication;
+import com.stupidchen.easytalk.controller.DatabaseController;
 import com.stupidchen.easytalk.data.Mapper.UserMapper;
 import com.stupidchen.easytalk.data.User;
+import com.stupidchen.easytalk.util.Global;
 import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.OnClose;
 import javax.websocket.OnMessage;
@@ -22,36 +23,17 @@ import java.io.IOException;
 
 @ServerEndpoint("/auth")
 @Component
-public class Auth {
+public class Auth implements Runnable {
     private static Logger logger = LoggerFactory.getLogger(Auth.class);
 
-    private static Session session;
+    private Session session;
 
-    private SqlSession sqlSession;
+    private DatabaseController db = new DatabaseController();
 
-    private boolean findUser(String userId, String password) {
-        if (sqlSession == null) sqlSession = EasyTalkApplication.sqlSessionFactory.openSession();
-        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-        User thisUser = userMapper.getUser(userId, password);
+    private Global global = Global.getInstance();
 
-        if (thisUser != null) return true;
-        return false;
-    }
+    public Auth() {
 
-    private boolean checkUser(String userId) {
-        if (sqlSession == null) sqlSession = EasyTalkApplication.sqlSessionFactory.openSession();
-        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-        User thisUser = userMapper.selectUser(userId);
-
-        if (thisUser != null) return true;
-        return false;
-    }
-
-    private void addUser(String userId, String username, String password) {
-        if (sqlSession == null) sqlSession = EasyTalkApplication.sqlSessionFactory.openSession();
-        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-        userMapper.insertUser(userId, username, password);
-        sqlSession.commit();
     }
 
     @OnOpen
@@ -68,23 +50,24 @@ public class Auth {
     @OnMessage
     public void onMessage(String message) {
         logger.info("Received: " + message);
-        String sendMsg = new String();
-        if (message.indexOf('L') != -1) {
+        String sendMsg = "";
+        if (message.charAt(0) == 'L') {
             int sep = message.indexOf('&');
             String userId = message.substring(2, sep);
             String password = message.substring(sep + 1, message.length());
-            boolean ifPass = findUser(userId, password);
+            boolean ifPass = db.findUser(userId, password);
             if (ifPass) {
                 logger.info(userId + " login success.");
                 String token = TokenProcessor.getInstance().generateToken(userId + password, false);
                 logger.info(token);
                 sendMsg = "L:S&" + token;
+                global.addUserId(token, userId);
             } else {
                 logger.info("Login failed.");
                 sendMsg = "L:F&Email or password is wrong!";
             }
         }
-        if (message.indexOf('R') != -1) {
+        if (message.charAt(0) == 'R') {
             String[] temp = message.substring(2, message.length()).split("&");
             String username = temp[0];
             String userId = temp[1];
@@ -94,19 +77,44 @@ public class Auth {
                 logger.info("Register failed.");
                 sendMsg = "R:F&Two passwords are not same!";
             } else {
-                if (checkUser(userId)) {
+                if (db.checkUser(userId)) {
                     logger.info("Register failed.");
                     sendMsg = "R:F&This email has been registered!";
                 } else {
-                    addUser(userId, username, password);
+                    db.addUser(userId, username, password);
                     logger.info(userId + " registered.");
                     sendMsg = "R:S";
                 }
             }
+
         }
+
+        if (message.charAt(0) == 'T') {
+            logger.info("Login use token");
+            String token = message.substring(2);
+
+            String userId = global.getUserIdByToken(token);
+            if (userId == null) {
+                logger.info("Token login failed");
+                sendMsg = "T:F&Token is invalid";
+            }
+            else {
+                logger.info("Token login success: " + userId);
+                sendMsg = "T:P&" + userId;
+            }
+        }
+        if (message.charAt(0) == 'O') {
+            String token = message.substring(2);
+            logger.info("Trying to logout. Token: " + token);
+            global.removeUserIdByToken(token);
+
+            onClose();
+        }
+
 
         if (!sendMsg.isEmpty()) {
             try {
+                logger.info("Send: " + sendMsg);
                 session.getBasicRemote().sendText(sendMsg);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -118,7 +126,16 @@ public class Auth {
 
     @OnClose
     public void onClose() {
-        sqlSession.close();
+        try {
+            session.close();
+        } catch (IOException e) {
+            logger.warn(e.getStackTrace().toString());
+        }
         logger.info("Auth connection has been closed.");
+    }
+
+    @Override
+    public void run() {
+
     }
 }

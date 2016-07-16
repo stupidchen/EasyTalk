@@ -1,9 +1,11 @@
 /**
  * Created by Mike on 16/6/6.
  */
-new Vue({
+var data = {message: 'Hello', rmsg : ''};
+
+var vm = new Vue({
     el: '#app',
-    data: {
-        message: "Hello", 
+    data: data,
+    created: function() {
     }
 });
